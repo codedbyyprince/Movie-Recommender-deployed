@@ -6,16 +6,31 @@ def create_app():
 
     @app.route('/')
     def home():
-        genres = ['action', 'comedy', 'family', 'animation','romance' , 'thriller', 'horror', 'science fiction']
+        # Load only first 3 genres initially for faster page load
+        genres = ['action', 'comedy', 'family']
         genre_rows = {}
         for g in genres:
             genre_rows[g] = by_genre(g)
 
-        # 3. Send all rows to template
         return render_template(
             "index.html",
-            genre_rows=genre_rows
+            genre_rows=genre_rows,
+            all_genres=['action', 'comedy', 'family', 'animation','romance' , 'thriller', 'horror', 'science fiction']
         )
+    
+    @app.route('/api/genre/<genre>')
+    def get_genre_data(genre):
+        """API endpoint to load genre data on demand"""
+        from flask import jsonify
+        allowed_genres = ['action', 'comedy', 'family', 'animation','romance' , 'thriller', 'horror', 'science fiction']
+        if genre not in allowed_genres:
+            return jsonify({'error': 'Invalid genre'}), 400
+        
+        movies = by_genre(genre)
+        return jsonify({
+            'genre': genre,
+            'movies': [{'title': m['title'], 'poster_url': m['poster_url']} for m in movies.data]
+        })
     @app.route('/movie', methods=['POST','GET'])
     def movie():
         movie = request.args.get('movie') or request.form.get('movie')

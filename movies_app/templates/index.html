@@ -36,7 +36,7 @@
     </section>
 
     <!-- Genre Sections -->
-    <main class="container">
+    <main class="container" id="genre-container">
         {% if genre_rows %}
             {% for genre, movies in genre_rows.items() %}
                 <section class="genre-section">
@@ -67,5 +67,47 @@
     <footer>
         <p>&copy; 2024 Personalized Movie Picks. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Lazy load remaining genres when user scrolls
+        const allGenres = {{ all_genres | tojson }};
+        const loadedGenres = Object.keys({{ genre_rows.keys() | list | tojson }});
+        let currentIndex = loadedGenres.length;
+
+        function loadMoreGenres() {
+            if (currentIndex >= allGenres.length) return;
+
+            const genre = allGenres[currentIndex];
+            currentIndex++;
+
+            fetch(`/api/genre/${genre}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.error) {
+                        const section = document.createElement('section');
+                        section.className = 'genre-section';
+                        section.innerHTML = `
+                            <h2 class="genre-title">${data.genre}</h2>
+                            <div class="genre-movies">
+                                ${data.movies.map(m => `
+                                    <a href="/movie?movie=${encodeURIComponent(m.title)}" class="movie-item" style="text-decoration: none;">
+                                        <img src="${m.poster_url}" alt="${m.title}" class="movie-poster" loading="lazy">
+                                        <p class="movie-title">${m.title}</p>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        `;
+                        document.getElementById('genre-container').appendChild(section);
+                    }
+                });
+        }
+
+        // Load more genres when user scrolls near bottom
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                loadMoreGenres();
+            }
+        });
+    </script>
 </body>
 </html>
