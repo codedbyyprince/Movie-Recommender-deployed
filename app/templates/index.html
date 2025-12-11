@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Personalized Movie Picks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                Personalized <span>Movie Picks</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Discover Your Next <span>Favorite Movie</span></h1>
+            <p class="hero-subtitle">Personalized recommendations based on your taste</p>
+            <form action="/search" method="post" class="search-hero">
+                <input 
+                    type="search" 
+                    name="q" 
+                    class="search-input" 
+                    placeholder="Search movies, actors, or genres..." 
+                    autofocus 
+                    autocomplete="off"
+                    required>
+                <button type="submit" class="search-btn">Search</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Genre Sections -->
+    <main class="container">
+        {% if genre_rows %}
+            {% for genre, movies in genre_rows.items() %}
+                <section class="genre-section">
+                    <h2 class="genre-title">{{ genre }}</h2>
+                    <div class="genre-movies">
+                        {% for movie in movies.data %}
+                            <a href="/movie?movie={{ movie.title }}" class="movie-item" style="text-decoration: none;">
+                                <img 
+                                    src="{{ movie.poster_url }}" 
+                                    alt="{{ movie.title }}"
+                                    class="movie-poster"
+                                    loading="lazy">
+                                <p class="movie-title">{{ movie.title }}</p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endfor %}
+        {% else %}
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading your personalized recommendations...</p>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Personalized Movie Picks. All rights reserved.</p>
+    </footer>
+</body>
+</html>

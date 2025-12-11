@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Personalized Movie Picks</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header>
+        <div class="navbar">
+            <div class="logo">
+                Personalized <span>Movie Picks</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Header -->
+    <section class="search-header">
+        <div class="search-header-content">
+            <h1>Search Results</h1>
+            {% if search_query %}
+                <p class="search-query">
+                    Results for: <span class="search-query-term">{{ search_query }}</span>
+                </p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Results -->
+    {% if result %}
+        <div class="search-results">
+            <div class="results-grid">
+                {% for movie in result %}
+                    <a href="/movie?movie={{ movie.title }}" class="search-item">
+                        <img 
+                            src="{{ movie.poster_url }}" 
+                            alt="{{ movie.title }}"
+                            class="search-poster"
+                            loading="lazy">
+                        <h3 class="search-title">{{ movie.title }}</h3>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">🎬</div>
+            <h2>No movies found</h2>
+            <p>Sorry, we couldn't find any movies matching your search.</p>
+            <p>Try different keywords or explore our recommendations below.</p>
+            <a href="/" class="back-to-home">Back to Home</a>
+        </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Personalized Movie Picks. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Scroll to top button functionality
+        const scrollBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                if (scrollBtn) scrollBtn.classList.add('show');
+            } else {
+                if (scrollBtn) scrollBtn.classList.remove('show');
+            }
+        });
+
+        if (scrollBtn) {
+            scrollBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    </script>
+</body>
+</html>
