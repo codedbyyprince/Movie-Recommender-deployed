@@ -1,10 +1,19 @@
-from app.services.supabase_client import supabase 
+from app.services.supabase_client import supabase
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import os
 
-embd = np.load('/media/prince/5A4E832F4E83034D/flask_app/final_vectors.npy', allow_pickle=True)
+# -------- FIXED PATH HANDLING FOR RENDER --------
+# Current file: app/routes/main.py
+# Project root: /.../project/
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))       # app/routes
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../"))  # go back to project root
+VECTOR_PATH = os.path.join(ROOT_DIR, "final_vectors.npy")
+
+# Load the vector file safely, works on any server
+embd = np.load(VECTOR_PATH, allow_pickle=True)
 similarity_matrix = cosine_similarity(embd)
-
+# --------------------------------------------------
 
 def get_movie_details(title):
     result = (
@@ -15,10 +24,9 @@ def get_movie_details(title):
     )
     return result.data[0] if result.data else None
 
+
 def search_movie(query):
     try:
-        # Use ilike for case-insensitive partial matching
-        # This works better than text_search for queries with numbers and multiple words
         pattern = f"%{query}%"
         print(f"[DEBUG] Searching for movies with pattern: {pattern}")
         
@@ -51,6 +59,7 @@ def by_genre(genre):
         .execute()
     )
     return result
+
 
 def recommend_for_movie(movie, n=7):
     pattern = f"%{movie}%"
