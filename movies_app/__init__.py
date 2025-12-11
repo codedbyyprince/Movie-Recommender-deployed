@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
-from app.services.movie_services import get_movie_names
-from app.routes.main import by_genre, recommend_for_movie, get_movie_details , search_movie
+from movies_app.services.movie_services import get_movie_names
+from movies_app.routes.main import by_genre, recommend_for_movie, get_movie_details , search_movie
 def create_app():
     app = Flask(__name__)
 

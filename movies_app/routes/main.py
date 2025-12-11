@@ -1,4 +1,4 @@
-from app.services.supabase_client import supabase
+from movies_app.services.supabase_client import supabase
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
